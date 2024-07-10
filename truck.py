@@ -1,8 +1,11 @@
 class Truck(object):
-    def __init__(self, truckId, currentLocation):
-        self.id = truckId
+    def __init__(self, currentLocation = None, packages = None, currentTime = None):
         self.location = currentLocation
+        self.packages = packages
+        self.currentTime = currentTime
 
 
-    def __str__(self):
-        return (self.id, self.currentLocation)
+def printTruckDetails(self):
+    print("Location: " + self.location)
+    print("Packages: " + self.packages)
+    print("Current Time: " + self.currentTime)
