@@ -1,4 +1,4 @@
-class Truck:
+class Truck(object):
     def __init__(self, truckId, currentLocation):
         self.id = truckId
         self.location = currentLocation
