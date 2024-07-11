@@ -10,7 +10,13 @@ class Package(object):
         self.rules = rules
         self.status = status
 
+    def __str__(self):
+        return f"Address: {self.address}, City: {self.city}, State: {self.state}, Zip Code: {self.zip}, Delivery Time: {self.deliveryTime}, Weight: {self.weight}, Rules: {self.rules}, Status: {self.status}"
     
+    def __repr__(self):
+        return self.__str__()
+    
+#Probably not needed
 def printPackageDetails(self):
     print("Package ID: ", self.id)
     print("Package Address: ", self.address)
