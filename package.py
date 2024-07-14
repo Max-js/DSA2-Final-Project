@@ -11,7 +11,7 @@ class Package(object):
         self.status = status
 
     def __str__(self):
-        return f"\n Address: {self.address},\n City: {self.city},\n State: {self.state},\n Zip Code: {self.zip},\n Delivery Time: {self.deliveryTime},\n Weight: {self.weight},\n Rules: {self.rules},\n Status: {self.status} \n"
+        return f"\n Address: {self.address},\n City: {self.city},\n Zip Code: {self.zip},\n Delivery Time: {self.deliveryTime},\n Weight: {self.weight},\n Status: {self.status} \n"
     
     def __repr__(self):
         return self.__str__()
