@@ -42,3 +42,7 @@ def getAddress(addressCSV, address):
                 return int(row[0])
 
 
+def getDistance(distanceCSV, x, y):
+    with open(distanceCSV) as distanceData:
+        distance = float(distanceData[x][y] if distanceData[x][y] == "" else distanceData[y][x])
+        return distance
