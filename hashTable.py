@@ -7,7 +7,6 @@ class ChainingHashTable(object):
         self.table = []
         for i in range(initial_capacity):
             self.table.append([])
-      
 
     def insert(self, packageId, package):
         key = hash(packageId) % len(self.table)
