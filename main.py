@@ -5,12 +5,14 @@ from truck import Truck
 from package import *
 from hashTable import *
 
-#Necessary??
 with open("DSA2-Final-Project\CSVFiles\distanceCSV.csv") as distanceCSV:
     distances = list(csv.reader(distanceCSV))
+
+with open("DSA2-Final-Project\CSVFiles\/addressCSV.csv") as addressCSV:
+    addresses = list(csv.reader(addressCSV))
     
-""" with open("DSA2-Final-Project\CSVFiles\packageCSV.csv") as packageCSV:
-    packages = list(csv.reader(packageCSV)) """
+with open("DSA2-Final-Project\CSVFiles\packageCSV.csv") as packageCSV:
+    packages = list(csv.reader(packageCSV))
 
 def loadPackageData(packageCSV, hashTable):
     with open(packageCSV) as packageData:
@@ -35,14 +37,22 @@ truck2 = Truck("4001 South 700 East", datetime.time(hour=10), 0.0, 16, 18, [3, 6
 truck3 = Truck("4001 South 700 East", datetime.time(hour=10), 0.0, 16, 18, [2, 4, 5, 6, 7, 8, 9, 10, 11, 25, 28, 32, 33])
 
 
-def getAddress(addressCSV, address):
-    with open(addressCSV) as addressData:
-        for row in csv.reader(addressData):
-            if address in row[2]:
-                return int(row[0])
+def getAddress(address):
+    return next((int(row[0]) for row in addresses if address in row[2]), None)
 
 
-def getDistance(distanceCSV, x, y):
-    with open(distanceCSV) as distanceData:
-        distance = float(distanceData[x][y] if distanceData[x][y] == "" else distanceData[y][x])
-        return distance
+def getDistance(x, y):
+    return float(distances[x][y] if distances[x][y] != "" else distances[y][x])
+
+    
+""" def test():
+    not_delivered = []
+    for packageID in truck1.packages:
+        package = table.search(packageID)
+        not_delivered.append(package)
+
+    print("Address Distance: ")
+    print(getDistance(getAddress(truck1.location), getAddress(package.address)))
+    
+
+test() """
