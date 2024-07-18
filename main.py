@@ -32,27 +32,38 @@ table = loadPackageData("DSA2-Final-Project\CSVFiles\packageCSV.csv", table)
 #table.printHashTable()
 #print(ChainingHashTable.search(table, 4))
 
-truck1 = Truck("4001 South 700 East", datetime.time(hour=10), 0.0, 16, 18, [1, 13, 14, 15, 16, 20, 29, 30, 31, 34, 37, 40])
-truck2 = Truck("4001 South 700 East", datetime.time(hour=10), 0.0, 16, 18, [3, 6, 12, 17, 18, 19, 21, 22, 23, 24, 26, 27, 35, 36, 38, 39])
-truck3 = Truck("4001 South 700 East", datetime.time(hour=10), 0.0, 16, 18, [2, 4, 5, 6, 7, 8, 9, 10, 11, 25, 28, 32, 33])
-
+truck1 = Truck(1, addresses[0][2], datetime.timedelta(hours=8), 0.0, 16, 18, [1, 13, 14, 15, 16, 20, 29, 30, 31, 34, 37, 40])
+truck2 = Truck(2, addresses[0][2], datetime.timedelta(hours=9, minutes=5), 0.0, 16, 18, [3, 6, 12, 17, 18, 19, 21, 22, 23, 24, 26, 27, 35, 36, 38, 39])
+truck3 = Truck(3, addresses[0][2], datetime.timedelta(hours=11), 0.0, 16, 18, [2, 4, 5, 6, 7, 8, 9, 10, 11, 25, 28, 32, 33])
 
 def getAddress(address):
     return next((int(row[0]) for row in addresses if address in row[2]), None)
 
-
 def getDistance(x, y):
     return float(distances[x][y] if distances[x][y] != "" else distances[y][x])
 
-    
-""" def test():
-    not_delivered = []
-    for packageID in truck1.packages:
+def deliverPackages(truck):
+    #print(len(truck.packages))
+    count = 0
+    for packageID in truck.packages:
         package = table.search(packageID)
-        not_delivered.append(package)
+        package.status = f"Out for delivery on Truck {truck.id}"
+        package.leftHub = truck.departureTime
 
-    print("Address Distance: ")
-    print(getDistance(getAddress(truck1.location), getAddress(package.address)))
-    
+        nextAddress = 1000
+        nextPackage = None
+        if getDistance(getAddress(truck.location), getAddress(package.address)) <= nextAddress:
+            nextAddress = getDistance(getAddress(truck.location), getAddress(package.address))
+            nextPackage = package
 
-test() """
+        truck.mileage += nextAddress
+        truck.address = nextPackage.address
+        truck.currentTime += datetime.timedelta(hours=nextAddress / 18)
+        nextPackage.status = "Delivered"
+        truck.departureTime = nextPackage.deliveryTime
+        #Necessary?
+        count += 1
+
+    #add distance from final location to hub:
+    #getDistance(truck.currentLocation, addresses[0][2])
+deliverPackages(truck3)
