@@ -22,7 +22,7 @@ def loadPackageData(packageCSV, hashTable):
             package.address = row[1]
             package.city = row[2]
             package.zip = row[4]
-            package.deliveryTime = row[5]
+            package.deliveryDeadline = row[5]
             package.weight = row[6]
             hashTable.insert(package.id, package)
     return hashTable
@@ -32,9 +32,9 @@ table = loadPackageData("DSA2-Final-Project\CSVFiles\packageCSV.csv", table)
 #table.printHashTable()
 #print(ChainingHashTable.search(table, 4))
 
-truck1 = Truck(1, addresses[0][2], datetime.timedelta(hours=8), 0.0, 16, 18, [1, 13, 14, 15, 16, 20, 29, 30, 31, 34, 37, 40])
-truck2 = Truck(2, addresses[0][2], datetime.timedelta(hours=9, minutes=5), 0.0, 16, 18, [3, 6, 12, 17, 18, 19, 21, 22, 23, 24, 26, 27, 35, 36, 38, 39])
-truck3 = Truck(3, addresses[0][2], datetime.timedelta(hours=11), 0.0, 16, 18, [2, 4, 5, 6, 7, 8, 9, 10, 11, 25, 28, 32, 33])
+truck1 = Truck(1, addresses[0][2], datetime.timedelta(hours=8), datetime.timedelta(hours=8), 0.0, 18, [1, 13, 14, 15, 16, 34, 20, 29, 30, 31, 37, 40])
+truck2 = Truck(2, addresses[0][2], datetime.timedelta(hours=9, minutes=5), datetime.timedelta(hours=9, minutes=5), 0.0, 18, [3, 6, 12, 17, 18, 19, 21, 22, 23, 24, 26, 27, 35, 36, 38, 39])
+truck3 = Truck(3, addresses[0][2], datetime.timedelta(hours=11, minutes=20), datetime.timedelta(hours=11, minutes=20), 0.0, 18, [2, 4, 5, 6, 7, 8, 9, 10, 11, 25, 28, 32, 33])
 
 def getAddress(address):
     return next((int(row[0]) for row in addresses if address in row[2]), None)
@@ -42,9 +42,14 @@ def getAddress(address):
 def getDistance(x, y):
     return float(distances[x][y] if distances[x][y] != "" else distances[y][x])
 
+def returnToHub(truck):
+    hubDistance = getDistance(getAddress(truck.currentLocation), getAddress(addresses[0][2]))
+    truck.currentTime += datetime.timedelta(hours=hubDistance / 18)
+    truck.mileage += hubDistance
+    truck.currentLocation = addresses[0][2]
+    print(f"TRUCK FINAL: ID: {truck.id},  mileage ({truck.mileage}), depart: ({truck.departureTime}), time ({truck.currentTime}), location ({truck.currentLocation})")
+
 def deliverPackages(truck):
-    #print(len(truck.packages))
-    count = 0
     for packageID in truck.packages:
         package = table.search(packageID)
         package.status = f"Out for delivery on Truck {truck.id}"
@@ -52,18 +57,25 @@ def deliverPackages(truck):
 
         nextAddress = 1000
         nextPackage = None
-        if getDistance(getAddress(truck.location), getAddress(package.address)) <= nextAddress:
-            nextAddress = getDistance(getAddress(truck.location), getAddress(package.address))
+        if getDistance(getAddress(truck.currentLocation), getAddress(package.address)) <= nextAddress:
+            nextAddress = getDistance(getAddress(truck.currentLocation), getAddress(package.address))
             nextPackage = package
+        if (truck.currentLocation == nextPackage.address):
+            nextPackage.address = truck.currentLocation
+        else:
+            truck.mileage += nextAddress
+            truck.currentLocation = nextPackage.address
+            print(truck.currentLocation)
+            truck.currentTime += datetime.timedelta(hours=nextAddress / 18)
 
-        truck.mileage += nextAddress
-        truck.address = nextPackage.address
-        truck.currentTime += datetime.timedelta(hours=nextAddress / 18)
+        nextPackage.deliveryTime = truck.currentTime
         nextPackage.status = "Delivered"
-        truck.departureTime = nextPackage.deliveryTime
-        #Necessary?
-        count += 1
+        #print(nextPackage)
+        #print(" ")
 
-    #add distance from final location to hub:
-    #getDistance(truck.currentLocation, addresses[0][2])
+    returnToHub(truck)
+
+deliverPackages(truck1)
+deliverPackages(truck2)
 deliverPackages(truck3)
+print(f"TOTAL Mileage: {truck1.mileage + truck2.mileage + truck3.mileage}")
