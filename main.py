@@ -47,7 +47,7 @@ def returnToHub(truck):
     truck.currentTime += datetime.timedelta(hours=hubDistance / 18)
     truck.mileage += hubDistance
     truck.currentLocation = addresses[0][2]
-    print(f"TRUCK FINAL: ID: {truck.id},  mileage ({truck.mileage}), depart: ({truck.departureTime}), time ({truck.currentTime}), location ({truck.currentLocation})")
+    #print(f"TRUCK FINAL: ID: {truck.id},  mileage ({truck.mileage}), depart: ({truck.departureTime}), time ({truck.currentTime}), location ({truck.currentLocation})")
 
 def deliverPackages(truck):
     for packageID in truck.packages:
@@ -65,17 +65,60 @@ def deliverPackages(truck):
         else:
             truck.mileage += nextAddress
             truck.currentLocation = nextPackage.address
-            print(truck.currentLocation)
             truck.currentTime += datetime.timedelta(hours=nextAddress / 18)
 
         nextPackage.deliveryTime = truck.currentTime
         nextPackage.status = "Delivered"
-        #print(nextPackage)
-        #print(" ")
 
     returnToHub(truck)
 
 deliverPackages(truck1)
 deliverPackages(truck2)
 deliverPackages(truck3)
-print(f"TOTAL Mileage: {truck1.mileage + truck2.mileage + truck3.mileage}")
+#print(f"TOTAL Mileage: {truck1.mileage + truck2.mileage + truck3.mileage}")
+
+
+class Main:
+    print("Select an option or input 9 to exit:")
+    userInput = input("""
+        1: Search for a specific package by ID
+        2: Display all package results
+        3: Search for all package statuses within a specific time range
+        9: Exit
+          """) 
+
+    if int(userInput) == 9:
+        exit()
+    
+    if int(userInput) == 1:
+        specificId = int(input("Please enter the package ID: "))
+        specificPackage = table.search(specificId)
+        print(specificPackage)
+
+    if int(userInput) == 2:
+        for i in range(1,41):
+            package = table.search(i)
+            print(package)
+
+    if int(userInput) == 3:
+        startTime = input("Please enter a start time in the format HH:MM: ")
+        (h, m) = startTime.split(sep=":")
+        startTime = datetime.timedelta(hours=int(h), minutes=int(m))
+        endTime = input("Please enter an end time in the format HH:MM ")
+        (h, m) = endTime.split(sep=":")
+        endTime = datetime.timedelta(hours=int(h), minutes=int(m))
+        for i in range(1,41):
+            package = table.search(i)
+            status = package.checkStatus(startTime, endTime)
+            print(f"Package ID: {package.id}")
+            print(f"Package Status: {status}")
+            if status == "At Hub":
+                print(f"Package Scheduled to Leave Hub: {package.leftHub}")
+            else:
+                print(f"Package Left Hub: {package.leftHub}")
+            if status == "En Route":
+                print(f"Package Expected Delivery Time: {package.deliveryTime}")
+            else:
+                print(f"Package Delivery Time: {package.deliveryTime}")
+            print(" ")
+
