@@ -110,15 +110,18 @@ class Main:
         for i in range(1,41):
             package = table.search(i)
             status = package.checkStatus(startTime, endTime)
-            print(f"Package ID: {package.id}")
+            print(f"\nPackage ID: {package.id}")
             print(f"Package Status: {status}")
+
             if status == "At Hub":
                 print(f"Package Scheduled to Leave Hub: {package.leftHub}")
-            else:
-                print(f"Package Left Hub: {package.leftHub}")
-            if status == "En Route":
                 print(f"Package Expected Delivery Time: {package.deliveryTime}")
-            else:
+
+            if status == "En Route":
+                print(f"Package Left Hub: {package.leftHub}")
+                print(f"Package Expected Delivery Time: {package.deliveryTime}")
+
+            if status == "Delivered":
+                print(f"Package Left Hub: {package.leftHub}")
                 print(f"Package Delivery Time: {package.deliveryTime}")
-            print(" ")
 
