@@ -30,9 +30,9 @@ def loadPackageData(packageCSV, hashTable):
 table = ChainingHashTable()
 table = loadPackageData("DSA2-Final-Project\CSVFiles\packageCSV.csv", table)
 
-truck1 = Truck(1, addresses[0][2], datetime.timedelta(hours=8), datetime.timedelta(hours=8), 0.0, 18, [1, 13, 14, 15, 16, 34, 20, 29, 30, 31, 37, 40])
-truck2 = Truck(2, addresses[0][2], datetime.timedelta(hours=9, minutes=5), datetime.timedelta(hours=9, minutes=5), 0.0, 18, [3, 6, 12, 17, 18, 19, 21, 22, 23, 24, 26, 27, 35, 36, 38, 39])
-truck3 = Truck(3, addresses[0][2], datetime.timedelta(hours=10, minutes=20), datetime.timedelta(hours=10, minutes=5), 0.0, 18, [2, 4, 5, 6, 7, 8, 9, 10, 11, 25, 28, 32, 33])
+truck1 = Truck(1, addresses[0][2], datetime.timedelta(hours=8), datetime.timedelta(hours=8), 0.0, 18, [1, 13, 14, 15, 16, 19, 20, 29, 30, 31, 34, 37, 40])
+truck2 = Truck(2, addresses[0][2], datetime.timedelta(hours=9, minutes=5), datetime.timedelta(hours=9, minutes=5), 0.0, 18, [3, 6, 12, 17, 18, 21, 22, 23, 24, 26, 27, 35, 36, 38, 39])
+truck3 = Truck(3, addresses[0][2], datetime.timedelta(hours=10, minutes=20), datetime.timedelta(hours=10, minutes=20), 0.0, 18, [2, 4, 5, 7, 8, 9, 10, 11, 25, 28, 32, 33])
 
 def getAddress(address):
     return next((int(row[0]) for row in addresses if address in row[2]), None)
@@ -56,6 +56,10 @@ def deliverPackages(truck):
             package = table.search(packageID)
             package.status = f"Out for delivery on Truck {truck.id}"
             package.leftHub = truck.departureTime
+            
+            if packageID == 9:
+                package.address = "410 S State St"
+                package.zip = "84111"
 
             distance = getDistance(getAddress(truck.currentLocation), getAddress(package.address))
             if distance < nextAddress:
