@@ -20,6 +20,9 @@ class Package(object):
     def checkStatus(self, startTime, endTime):
         if self.deliveryTime < startTime or startTime <= self.deliveryTime <= endTime:
             return "Delivered"
-        if startTime <= self.leftHub <= endTime or (startTime <= self.leftHub and self.deliveryTime < endTime):
+        
+        if self.leftHub < endTime < self.deliveryTime:
             return "En Route"
-        return "At Hub"
+
+        if endTime < self.leftHub:
+            return "At Hub"

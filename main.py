@@ -32,7 +32,7 @@ table = loadPackageData("DSA2-Final-Project\CSVFiles\packageCSV.csv", table)
 
 truck1 = Truck(1, addresses[0][2], datetime.timedelta(hours=8), datetime.timedelta(hours=8), 0.0, 18, [1, 13, 14, 15, 16, 34, 20, 29, 30, 31, 37, 40])
 truck2 = Truck(2, addresses[0][2], datetime.timedelta(hours=9, minutes=5), datetime.timedelta(hours=9, minutes=5), 0.0, 18, [3, 6, 12, 17, 18, 19, 21, 22, 23, 24, 26, 27, 35, 36, 38, 39])
-truck3 = Truck(3, addresses[0][2], datetime.timedelta(hours=11, minutes=20), datetime.timedelta(hours=11, minutes=20), 0.0, 18, [2, 4, 5, 6, 7, 8, 9, 10, 11, 25, 28, 32, 33])
+truck3 = Truck(3, addresses[0][2], datetime.timedelta(hours=10, minutes=20), datetime.timedelta(hours=10, minutes=5), 0.0, 18, [2, 4, 5, 6, 7, 8, 9, 10, 11, 25, 28, 32, 33])
 
 def getAddress(address):
     return next((int(row[0]) for row in addresses if address in row[2]), None)
@@ -45,27 +45,34 @@ def returnToHub(truck):
     truck.currentTime += datetime.timedelta(hours=hubDistance / 18)
     truck.mileage += hubDistance
     truck.currentLocation = addresses[0][2]
+    print(f"TRUCK FINAL: ID: {truck.id},  mileage ({truck.mileage}), depart: ({truck.departureTime}), time ({truck.currentTime}), location ({truck.currentLocation})")
 
 def deliverPackages(truck):
-    for packageID in truck.packages:
-        package = table.search(packageID)
-        package.status = f"Out for delivery on Truck {truck.id}"
-        package.leftHub = truck.departureTime
-
-        nextAddress = 1000
+    while truck.packages:
+        nextAddress = float('inf')
         nextPackage = None
-        if getDistance(getAddress(truck.currentLocation), getAddress(package.address)) <= nextAddress:
-            nextAddress = getDistance(getAddress(truck.currentLocation), getAddress(package.address))
-            nextPackage = package
-        if (truck.currentLocation == nextPackage.address):
-            nextPackage.address = truck.currentLocation
-        else:
-            truck.mileage += nextAddress
-            truck.currentLocation = nextPackage.address
-            truck.currentTime += datetime.timedelta(hours=nextAddress / 18)
 
-        nextPackage.deliveryTime = truck.currentTime
-        nextPackage.status = "Delivered"
+        for packageID in truck.packages:
+            package = table.search(packageID)
+            package.status = f"Out for delivery on Truck {truck.id}"
+            package.leftHub = truck.departureTime
+
+            distance = getDistance(getAddress(truck.currentLocation), getAddress(package.address))
+            if distance < nextAddress:
+                nextAddress = distance
+                nextPackage = package
+
+        if nextPackage:
+            if truck.currentLocation == nextPackage.address:
+                nextPackage.address = truck.currentLocation
+            else:
+                truck.mileage += nextAddress
+                truck.currentLocation = nextPackage.address
+                truck.currentTime += datetime.timedelta(hours=nextAddress / 18)
+
+            nextPackage.deliveryTime = truck.currentTime
+            nextPackage.status = "Delivered"
+            truck.packages.remove(nextPackage.id)
 
     returnToHub(truck)
 
