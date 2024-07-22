@@ -17,15 +17,9 @@ class Package(object):
     def __repr__(self):
         return self.__str__()
     
-    #FIX extra condition:
     def checkStatus(self, startTime, endTime):
         if self.deliveryTime < startTime or startTime <= self.deliveryTime <= endTime:
             return "Delivered"
-        elif startTime <= self.leftHub and self.deliveryTime < endTime:
-            return "Delivered"
-        elif startTime <= self.leftHub <= endTime:
+        if startTime <= self.leftHub <= endTime or (startTime <= self.leftHub and self.deliveryTime < endTime):
             return "En Route"
-        elif startTime < self.leftHub and not (self.deliveryTime <= endTime):
-            return "At Hub"
-        else:
-            return "En Route"
+        return "At Hub"

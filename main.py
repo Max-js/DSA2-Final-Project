@@ -29,8 +29,6 @@ def loadPackageData(packageCSV, hashTable):
 
 table = ChainingHashTable()
 table = loadPackageData("DSA2-Final-Project\CSVFiles\packageCSV.csv", table)
-#table.printHashTable()
-#print(ChainingHashTable.search(table, 4))
 
 truck1 = Truck(1, addresses[0][2], datetime.timedelta(hours=8), datetime.timedelta(hours=8), 0.0, 18, [1, 13, 14, 15, 16, 34, 20, 29, 30, 31, 37, 40])
 truck2 = Truck(2, addresses[0][2], datetime.timedelta(hours=9, minutes=5), datetime.timedelta(hours=9, minutes=5), 0.0, 18, [3, 6, 12, 17, 18, 19, 21, 22, 23, 24, 26, 27, 35, 36, 38, 39])
@@ -47,7 +45,6 @@ def returnToHub(truck):
     truck.currentTime += datetime.timedelta(hours=hubDistance / 18)
     truck.mileage += hubDistance
     truck.currentLocation = addresses[0][2]
-    #print(f"TRUCK FINAL: ID: {truck.id},  mileage ({truck.mileage}), depart: ({truck.departureTime}), time ({truck.currentTime}), location ({truck.currentLocation})")
 
 def deliverPackages(truck):
     for packageID in truck.packages:
@@ -75,50 +72,59 @@ def deliverPackages(truck):
 deliverPackages(truck1)
 deliverPackages(truck2)
 deliverPackages(truck3)
-#print(f"TOTAL Mileage: {truck1.mileage + truck2.mileage + truck3.mileage}")
-
 
 class Main:
-    print("Select an option or input 9 to exit:")
-    userInput = input("""
-        1: Search for a specific package by ID
-        2: Display all package results
-        3: Search for all package statuses within a specific time range
-        9: Exit
-          """) 
+    acceptedInputs = [1,2,3,9]
+    try:
+        print("\nWelcome to the package delivery management system!")
+        print(f"Total truck mileage for current route: {truck1.mileage + truck2.mileage + truck3.mileage}")
+        print("\nSelect an option or input 9 to exit:")
+        userInput = input("""
+            1: Search for a specific package by ID
+            2: Display all package results
+            3: Search for all package statuses within a specific time range
+            9: Exit
+            """) 
+        
+        if int(userInput) not in acceptedInputs:
+            raise ValueError("Input must be one of the choices: 1, 2, 3, or 9. Please try again.")
+        
+        if int(userInput) == 9:
+            exit()
+        
+        if int(userInput) == 1:
+            specificId = int(input("Please enter the package ID: "))
+            specificPackage = table.search(specificId)
+            print(specificPackage)
 
-    if int(userInput) == 9:
-        exit()
-    
-    if int(userInput) == 1:
-        specificId = int(input("Please enter the package ID: "))
-        specificPackage = table.search(specificId)
-        print(specificPackage)
+        if int(userInput) == 2:
+            for i in range(1,41):
+                package = table.search(i)
+                print(package)
 
-    if int(userInput) == 2:
-        for i in range(1,41):
-            package = table.search(i)
-            print(package)
+        if int(userInput) == 3:
+            (h, m) = input("Please enter a start time in the format HH:MM: ").split(sep=":")
+            startTime = datetime.timedelta(hours=int(h), minutes=int(m))
+            (h, m) = input("Please enter an end time in the format HH:MM ").split(sep=":")
+            endTime = datetime.timedelta(hours=int(h), minutes=int(m))
 
-    if int(userInput) == 3:
-        startTime = input("Please enter a start time in the format HH:MM: ")
-        (h, m) = startTime.split(sep=":")
-        startTime = datetime.timedelta(hours=int(h), minutes=int(m))
-        endTime = input("Please enter an end time in the format HH:MM ")
-        (h, m) = endTime.split(sep=":")
-        endTime = datetime.timedelta(hours=int(h), minutes=int(m))
-        for i in range(1,41):
-            package = table.search(i)
-            status = package.checkStatus(startTime, endTime)
-            print(f"Package ID: {package.id}")
-            print(f"Package Status: {status}")
-            if status == "At Hub":
-                print(f"Package Scheduled to Leave Hub: {package.leftHub}")
-            else:
-                print(f"Package Left Hub: {package.leftHub}")
-            if status == "En Route":
-                print(f"Package Expected Delivery Time: {package.deliveryTime}")
-            else:
-                print(f"Package Delivery Time: {package.deliveryTime}")
-            print(" ")
+            for i in range(1,41):
+                package = table.search(i)
+                status = package.checkStatus(startTime, endTime)
+                print(f"\nPackage ID: {package.id}")
+                print(f"Package Status: {status}")
 
+                if status == "At Hub":
+                    print(f"Package Scheduled to Leave Hub: {package.leftHub}")
+                    print(f"Package Expected Delivery Time: {package.deliveryTime}")
+
+                if status == "En Route":
+                    print(f"Package Left Hub: {package.leftHub}")
+                    print(f"Package Expected Delivery Time: {package.deliveryTime}")
+
+                if status == "Delivered":
+                    print(f"Package Left Hub: {package.leftHub}")
+                    print(f"Package Delivery Time: {package.deliveryTime}")
+
+    except ValueError as e:
+        print(e) 
