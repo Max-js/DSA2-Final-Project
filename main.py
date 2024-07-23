@@ -29,6 +29,7 @@ def loadPackageData(packageCSV, hashTable):
             package.zip = row[4]
             package.deliveryDeadline = row[5]
             package.weight = row[6]
+            package.status = "Hub"
             hashTable.insert(package.id, package)
     return hashTable
 
@@ -41,8 +42,8 @@ truck1 = Truck(1, addresses[0][2], datetime.timedelta(hours=8), datetime.timedel
 truck2 = Truck(2, addresses[0][2], datetime.timedelta(hours=9, minutes=5), datetime.timedelta(hours=9, minutes=5), 0.0, 18, [3, 6, 12, 17, 18, 21, 22, 23, 24, 26, 27, 35, 36, 38, 39])
 truck3 = Truck(3, addresses[0][2], datetime.timedelta(hours=10, minutes=20), datetime.timedelta(hours=10, minutes=20), 0.0, 18, [2, 4, 5, 7, 8, 9, 10, 11, 25, 28, 32, 33])
 
-#Return the address number from address string
-def getAddress(address):
+#Return the distance (mileage) of the next address
+def getAddressMileage(address):
     return next((int(row[0]) for row in addresses if address in row[2]), None)
 
 #Return the distance between two addresses
@@ -51,7 +52,7 @@ def getDistance(x, y):
 
 #Returns truck to hub, setting address, time, and accounting for final trip mileage
 def returnToHub(truck):
-    hubDistance = getDistance(getAddress(truck.currentLocation), getAddress(addresses[0][2]))
+    hubDistance = getDistance(getAddressMileage(truck.currentLocation), getAddressMileage(addresses[0][2]))
     truck.currentTime += datetime.timedelta(hours=hubDistance / 18)
     truck.mileage += hubDistance
     truck.currentLocation = addresses[0][2]
@@ -59,7 +60,7 @@ def returnToHub(truck):
 #Execute the delivery of packages based on truck
 def deliverPackages(truck):
     while truck.packages:
-        nextAddress = float('inf')
+        nextAddressMileage = float('inf')
         nextPackage = None
 
         #Iterate through packages on truck
@@ -74,9 +75,9 @@ def deliverPackages(truck):
                 package.zip = "84111"
 
             #Use nearest neighbor algorithm to determine next package that should be delivered from packages remaining on truck
-            distance = getDistance(getAddress(truck.currentLocation), getAddress(package.address))
-            if distance < nextAddress:
-                nextAddress = distance
+            distance = getDistance(getAddressMileage(truck.currentLocation), getAddressMileage(package.address))
+            if distance < nextAddressMileage:
+                nextAddressMileage = distance
                 nextPackage = package
 
         #If there is a next packge, then deliver it
@@ -85,9 +86,9 @@ def deliverPackages(truck):
             if truck.currentLocation == nextPackage.address:
                 nextPackage.address = truck.currentLocation
             else:
-                truck.mileage += nextAddress
+                truck.mileage += nextAddressMileage
                 truck.currentLocation = nextPackage.address
-                truck.currentTime += datetime.timedelta(hours=nextAddress / 18)
+                truck.currentTime += datetime.timedelta(hours=nextAddressMileage / 18)
 
             nextPackage.deliveryTime = truck.currentTime
             nextPackage.status = "Delivered"
