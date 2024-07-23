@@ -29,6 +29,7 @@ def loadPackageData(packageCSV, hashTable):
             package.zip = row[4]
             package.deliveryDeadline = row[5]
             package.weight = row[6]
+            package.status = "Hub"
             hashTable.insert(package.id, package)
     return hashTable
 
