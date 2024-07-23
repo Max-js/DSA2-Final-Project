@@ -1,3 +1,6 @@
+#Source Citation: WGU C950 Supplemental Resources Webinar 1 - Let's Go Hashing - Complete Python Code:
+#Link to source https://srm--c.vf.force.com/apex/coursearticle?Id=kA03x000000e1fuCAA
+
 # HashTable class using chaining.
 class ChainingHashTable(object):
     # Constructor with optional initial capacity parameter.
