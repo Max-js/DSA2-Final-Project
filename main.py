@@ -9,13 +9,13 @@ from package import *
 from hashTable import *
 
 #Initialize necessary CSV files for use throughout the program
-with open("DSA2-Final-Project\CSVFiles\distanceCSV.csv") as distanceCSV:
+with open("CSVFiles\distanceCSV.csv") as distanceCSV:
     distances = list(csv.reader(distanceCSV))
 
-with open("DSA2-Final-Project\CSVFiles\/addressCSV.csv") as addressCSV:
+with open("CSVFiles\/addressCSV.csv") as addressCSV:
     addresses = list(csv.reader(addressCSV))
     
-with open("DSA2-Final-Project\CSVFiles\packageCSV.csv") as packageCSV:
+with open("CSVFiles\packageCSV.csv") as packageCSV:
     packages = list(csv.reader(packageCSV))
 
 #Load package data into Hashtable while assigning values from package CSV
@@ -35,7 +35,7 @@ def loadPackageData(packageCSV, hashTable):
 
 #Initialize Hash Table and load data into it
 table = ChainingHashTable()
-table = loadPackageData("DSA2-Final-Project\CSVFiles\packageCSV.csv", table)
+table = loadPackageData("CSVFiles\packageCSV.csv", table)
 
 #Initialize and manually load trucks
 truck1 = Truck(1, addresses[0][2], datetime.timedelta(hours=8), datetime.timedelta(hours=8), 0.0, 18, [1, 13, 14, 15, 16, 19, 20, 29, 30, 31, 34, 37, 40])
