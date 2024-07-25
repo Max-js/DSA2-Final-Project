@@ -68,6 +68,7 @@ def deliverPackages(truck):
             package = table.search(packageID)
             package.status = "En Route"
             package.leftHub = truck.departureTime
+            package.truck = truck
             
             #Manually change package #9 address when new address is available
             if packageID == 9:
@@ -149,24 +150,9 @@ class Main:
             #Iterate through all packages
             for i in range(1,41):
                 package = table.search(i)
-
                 #Return status of each package within requested time frame
-                status = package.checkStatus(startTime, endTime)
-                print(f"\nPackage ID: {package.id}")
-                print(f"Package Status: {status}")
-
-                #Adjust output to be more appropriate based on package status
-                if status == "At Hub":
-                    print(f"Package Scheduled to Leave Hub: {package.leftHub}")
-                    print(f"Package Expected Delivery Time: {package.deliveryTime}")
-
-                if status == "En Route":
-                    print(f"Package Left Hub: {package.leftHub}")
-                    print(f"Package Expected Delivery Time: {package.deliveryTime}")
-
-                if status == "Delivered":
-                    print(f"Package Left Hub: {package.leftHub}")
-                    print(f"Package Delivery Time: {package.deliveryTime}")
+                package.status = package.checkStatus(startTime, endTime)
+                print(package)
         
         if int(userInput) == 4:
             (h, m) = input("Please enter a time in the format HH:MM: ").split(sep=":")
@@ -182,8 +168,7 @@ class Main:
                 packageId = int(input("Please enter the package ID: "))
                 #Get individual package by ID and check its status
                 package = table.search(packageId)
-                status = package.checkStatus(time, time)
-                package.status = status
+                package.status = package.checkStatus(time, time)
                 print(package)
 
             if quantity == 2:
@@ -191,8 +176,7 @@ class Main:
                 for i in range(1,41):
                     package = table.search(i)
                     #Return status of each package within requested time frame
-                    status = package.checkStatus(time, time)
-                    package.status = status
+                    package.status = package.checkStatus(time, time)
                     print(package)
 
     #Handle erroneous input
