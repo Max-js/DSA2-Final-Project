@@ -105,7 +105,7 @@ deliverPackages(truck3)
 #Handles UI elements
 class Main:
     #List of acceptable inputs for comparison
-    acceptedInputs = [1,2,3,9]
+    acceptedInputs = [1,2,3,4,9]
     try:
         print("\nWelcome to the WGUPS package delivery management system!")
         print(f"Total truck mileage for current route: {truck1.mileage + truck2.mileage + truck3.mileage}")
@@ -114,12 +114,13 @@ class Main:
             1: Search for a specific package by ID
             2: Display all package results
             3: Search for all package statuses within a specific time range
+            4: Check status of a single package, or all packages at a given time
             9: Exit
             """) 
         
         #Raise error if user inputs anything other than one of the 4 accepted inputs.
         if int(userInput) not in acceptedInputs:
-            raise ValueError("Input must be one of the choices: 1, 2, 3, or 9. Please try again.")
+            raise ValueError("Input must be one of the choices: 1, 2, 3, 4, or 9. Please try again.")
         
         #Handle Exit
         if int(userInput) == 9:
@@ -166,6 +167,33 @@ class Main:
                 if status == "Delivered":
                     print(f"Package Left Hub: {package.leftHub}")
                     print(f"Package Delivery Time: {package.deliveryTime}")
+        
+        if int(userInput) == 4:
+            (h, m) = input("Please enter a time in the format HH:MM: ").split(sep=":")
+            time = datetime.timedelta(hours=int(h), minutes=int(m))
+
+            quantity = int(input("""
+                Please make a selection:
+                1. Check the status of a singular package at this time
+                2. Check the status of all packages at this time
+                """))
+            
+            if quantity == 1:
+                packageId = int(input("Please enter the package ID: "))
+                #Get individual package by ID and check its status
+                package = table.search(packageId)
+                status = package.checkStatus(time, time)
+                package.status = status
+                print(package)
+
+            if quantity == 2:
+                #Iterate through all packages
+                for i in range(1,41):
+                    package = table.search(i)
+                    #Return status of each package within requested time frame
+                    status = package.checkStatus(time, time)
+                    package.status = status
+                    print(package)
 
     #Handle erroneous input
     except ValueError as e:
